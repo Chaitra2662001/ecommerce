@@ -32,8 +32,28 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+
+
+# ============================================================
+# SECURITY
+# ============================================================
+
+SECURE_SSL_REDIRECT = os.getenv(
+    "SECURE_SSL_REDIRECT", "False"
+).lower() == "true"
+
+SESSION_COOKIE_SECURE = os.getenv(
+    "SESSION_COOKIE_SECURE", "False"
+).lower() == "true"
+
+CSRF_COOKIE_SECURE = os.getenv(
+    "CSRF_COOKIE_SECURE", "False"
+).lower() == "true"
+
+SECURE_HSTS_SECONDS = int(
+    os.getenv("SECURE_HSTS_SECONDS", "0")
+)
 
 
 # ============================================================
@@ -131,6 +151,7 @@ DATABASES = {
     }
 }
 
+
 # ============================================================
 # PASSWORD VALIDATION
 # ============================================================
@@ -186,13 +207,33 @@ STATICFILES_DIRS = [
 # EMAIL
 # ============================================================
 
-MAILERS = {
-    'default': {
-        'BACKEND':
-        'django.core.mail.backends.console.EmailBackend',
-    },
-}
+if DEBUG:
+    MAILERS = {
+        "default": {
+            "BACKEND": "django.core.mail.backends.console.EmailBackend",
+        },
+    }
+else:
+    MAILERS = {
+        "default": {
+            "BACKEND": os.getenv(
+                "EMAIL_BACKEND",
+                "django.core.mail.backends.smtp.EmailBackend"
+            ),
+        },
+    }
+
+
+# ============================================================
+# LOGIN
+# ============================================================
+
 LOGIN_URL = "/login/"
+
+
+# ============================================================
+# REST FRAMEWORK
+# ============================================================
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
