@@ -1,0 +1,1065 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+/* =========================
+   PAGE
+========================= */
+
+.orders-page {
+    min-height: 100vh;
+    padding: 45px 15px 70px;
+    background:
+        radial-gradient(circle at 5% 5%, rgba(37,99,235,.10), transparent 25%),
+        radial-gradient(circle at 95% 10%, rgba(6,182,212,.10), transparent 25%),
+        #f6f9fc;
+}
+
+.orders-wrapper {
+    max-width: 1050px;
+    margin: auto;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.orders-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.orders-header-icon {
+    width: 76px;
+    height: 76px;
+    margin: auto auto 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 24px;
+
+    background: linear-gradient(
+        135deg,
+        #2563eb,
+        #06b6d4
+    );
+
+    color: white;
+    font-size: 35px;
+
+    box-shadow:
+        0 12px 30px rgba(37,99,235,.25);
+}
+
+.orders-header h1 {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.orders-header p {
+    margin-top: 8px;
+    color: #64748b;
+}
+
+
+/* =========================
+   ORDER CARD
+========================= */
+
+.order-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    margin-bottom: 25px;
+    overflow: hidden;
+
+    box-shadow:
+        0 8px 28px rgba(15,23,42,.07);
+
+    transition: .25s ease;
+}
+
+.order-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 16px 40px rgba(15,23,42,.11);
+}
+
+
+/* =========================
+   TOP
+========================= */
+
+.order-top {
+    padding: 21px 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8fbff,
+            #eef8ff
+        );
+
+    border-bottom: 1px solid #e5edf5;
+}
+
+.small-label {
+    display: block;
+
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    font-weight: 800;
+
+    color: #64748b;
+
+    margin-bottom: 4px;
+}
+
+.order-number {
+    font-size: 19px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.order-total {
+    font-size: 23px;
+    font-weight: 800;
+    color: #2563eb;
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 7px 14px;
+
+    border-radius: 50px;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.pending {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.shipped {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.delivered {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.cancelled {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+
+/* =========================
+   BODY
+========================= */
+
+.order-body {
+    padding: 25px;
+}
+
+
+/* =========================
+   ITEMS
+========================= */
+
+.section-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: #334155;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    margin-bottom: 12px;
+}
+
+.items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.item-row {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    padding: 13px 15px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e7edf3;
+
+    border-radius: 13px;
+}
+
+.item-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 11px;
+
+    background: linear-gradient(
+        135deg,
+        #eff6ff,
+        #ecfeff
+    );
+
+    font-size: 20px;
+}
+
+.item-name {
+    color: #1e293b;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+
+/* =========================
+   PAYMENT
+========================= */
+
+.payment-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 18px;
+
+    padding: 13px 15px;
+
+    border-radius: 13px;
+
+    background: #fafafa;
+
+    border: 1px solid #edf1f5;
+}
+
+.payment-label {
+    color: #475569;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.paid {
+    padding: 6px 12px;
+
+    border-radius: 50px;
+
+    background: #dcfce7;
+    color: #15803d;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.not-paid {
+    padding: 6px 12px;
+
+    border-radius: 50px;
+
+    background: #fee2e2;
+    color: #b91c1c;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+
+/* =========================
+   TRACKING
+========================= */
+
+.tracking {
+    margin-top: 24px;
+
+    padding-top: 22px;
+
+    border-top: 1px solid #e5e7eb;
+}
+
+.tracking-heading {
+    font-size: 13px;
+    font-weight: 800;
+    color: #334155;
+
+    margin-bottom: 22px;
+}
+
+.timeline {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.step {
+    width: 95px;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.step-icon {
+    width: 48px;
+    height: 48px;
+
+    margin: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #f1f5f9;
+
+    border: 3px solid #e2e8f0;
+
+    font-size: 21px;
+}
+
+.step.active .step-icon {
+    background: linear-gradient(
+        135deg,
+        #2563eb,
+        #06b6d4
+    );
+
+    border-color: #dbeafe;
+
+    box-shadow:
+        0 5px 15px rgba(37,99,235,.20);
+}
+
+.step-label {
+    margin-top: 7px;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    color: #64748b;
+}
+
+.step.active .step-label {
+    color: #2563eb;
+}
+
+.timeline-line {
+    flex: 1;
+
+    height: 4px;
+
+    margin-bottom: 22px;
+
+    border-radius: 10px;
+
+    background: #e2e8f0;
+}
+
+.timeline-line.active {
+    background: linear-gradient(
+        90deg,
+        #2563eb,
+        #06b6d4
+    );
+}
+
+
+/* =========================
+   CANCEL BUTTON
+========================= */
+
+.cancel-area {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: 18px;
+}
+
+.cancel-btn {
+    border: 1px solid #fecdd3;
+
+    background: #fff1f2;
+
+    color: #e11d48;
+
+    border-radius: 50px;
+
+    padding: 8px 17px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    transition: .2s;
+}
+
+.cancel-btn:hover {
+    background: #e11d48;
+    color: white;
+}
+
+
+/* =========================
+   CANCELLED
+========================= */
+
+.cancelled-box {
+    margin-top: 20px;
+
+    padding: 20px;
+
+    text-align: center;
+
+    border-radius: 14px;
+
+    background: linear-gradient(
+        135deg,
+        #fff1f2,
+        #fef2f2
+    );
+
+    border: 1px solid #fecdd3;
+
+    color: #b91c1c;
+}
+
+.cancelled-icon {
+    font-size: 28px;
+}
+
+.cancelled-title {
+    margin-top: 5px;
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.cancelled-text {
+    margin-top: 3px;
+
+    font-size: 12px;
+}
+
+
+/* =========================
+   EMPTY
+========================= */
+
+.empty-orders {
+    max-width: 650px;
+    margin: 40px auto;
+
+    padding: 65px 25px;
+
+    background: white;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 22px;
+
+    text-align: center;
+
+    box-shadow:
+        0 10px 35px rgba(15,23,42,.07);
+}
+
+.empty-icon {
+    width: 90px;
+    height: 90px;
+
+    margin: auto auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #eff6ff;
+
+    font-size: 42px;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width: 768px) {
+
+    .orders-page {
+        padding-top: 30px;
+    }
+
+    .orders-header h1 {
+        font-size: 28px;
+    }
+
+    .order-top,
+    .order-body {
+        padding: 18px;
+    }
+
+    .order-total {
+        font-size: 19px;
+    }
+}
+
+
+@media(max-width: 576px) {
+
+    .step {
+        width: 58px;
+    }
+
+    .step-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 17px;
+    }
+
+    .step-label {
+        font-size: 9px;
+    }
+
+    .timeline-line {
+        margin-bottom: 20px;
+    }
+
+    .payment-box {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .cancel-area {
+        justify-content: flex-start;
+    }
+}
+
+</style>
+
+
+<div class="orders-page">
+
+<div class="orders-wrapper">
+
+
+    <!-- HEADER -->
+
+    <div class="orders-header">
+
+        <div class="orders-header-icon">
+            📦
+        </div>
+
+        <h1>
+            My Orders
+        </h1>
+
+        <p>
+            Track your purchases and manage your orders
+        </p>
+
+    </div>
+
+
+
+    {% if orders %}
+
+
+        {% for order in orders %}
+
+
+        <!-- ORDER -->
+
+        <div class="order-card">
+
+
+            <!-- TOP -->
+
+            <div class="order-top">
+
+                <div class="row align-items-center g-3">
+
+
+                    <div class="col-6 col-md-4">
+
+                        <span class="small-label">
+                            Order ID
+                        </span>
+
+                        <div class="order-number">
+                            #{{ order.id }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-6 col-md-4 text-md-center">
+
+                        <span class="small-label">
+                            Status
+                        </span>
+
+
+                        {% if order.status == 'Pending' %}
+
+                            <span class="status pending">
+                                <span class="status-dot"></span>
+                                Pending
+                            </span>
+
+                        {% elif order.status == 'Confirmed' %}
+
+                            <span class="status shipped">
+                                <span class="status-dot"></span>
+                                Confirmed
+                            </span>
+
+                        {% elif order.status == 'Shipped' %}
+
+                            <span class="status shipped">
+                                <span class="status-dot"></span>
+                                Shipped
+                            </span>
+
+                        {% elif order.status == 'Out for Delivery' %}
+
+                            <span class="status shipped">
+                                <span class="status-dot"></span>
+                                Out for Delivery
+                            </span>
+
+                        {% elif order.status == 'Delivered' %}
+
+                            <span class="status delivered">
+                                <span class="status-dot"></span>
+                                Delivered
+                            </span>
+
+                        {% elif order.status == 'Cancelled' %}
+
+                            <span class="status cancelled">
+                                <span class="status-dot"></span>
+                                Cancelled
+                            </span>
+
+                        {% else %}
+
+                            <span class="status">
+                                {{ order.status }}
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="col-12 col-md-4 text-md-end">
+
+                        <span class="small-label">
+                            Total Amount
+                        </span>
+
+                        <div class="order-total">
+                            ₹{{ order.total }}
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- BODY -->
+
+            <div class="order-body">
+
+
+                <!-- ITEMS -->
+
+                <div class="section-heading">
+                    🛍️
+                    Ordered Items
+                </div>
+
+                <div class="items-list">
+
+                    {% with order_items=order.order_items.all %}
+
+                        {% if order_items %}
+
+                            {% for item in order_items %}
+
+                                <div class="item-row">
+
+                                    <div class="item-icon">
+
+                                        {% if item.product_image %}
+
+                                            <img
+                                                src="{% static 'images/' %}{{ item.product_image }}"
+                                                alt="{{ item.product_name }}"
+                                                style="width:42px; height:42px; object-fit:cover; border-radius:11px;"
+                                            >
+
+                                        {% else %}
+
+                                            🛍️
+
+                                        {% endif %}
+
+                                    </div>
+
+                                    <div class="item-name">
+
+                                        <div>
+                                            {{ item.product_name }}
+                                        </div>
+
+                                        <small class="text-muted">
+
+                                            ₹{{ item.product_price }}
+                                            × {{ item.quantity }}
+
+                                            {% if item.size %}
+                                                · Size: {{ item.size }}
+                                            {% endif %}
+
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
+                        {% else %}
+
+                            <!-- Old orders compatibility -->
+
+                            <div class="item-row">
+
+                                <div class="item-icon">
+                                    🛍️
+                                </div>
+
+                                <div class="item-name">
+                                    {{ order.items }}
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+                    {% endwith %}
+
+                </div>
+
+
+                <!-- PAYMENT -->
+
+                <div class="payment-box">
+
+                    <div class="payment-label">
+                        💳 Payment Status
+                    </div>
+
+
+                    {% if order.payment_status == 'Paid' %}
+
+                        <span class="paid">
+                            ✓ PAID
+                        </span>
+
+                    {% else %}
+
+                        <span class="not-paid">
+                            {{ order.payment_status }}
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+
+                <!-- CANCEL -->
+
+                {% if order.status == 'Pending' %}
+
+                    <div class="cancel-area">
+
+                        <form
+                            action="{% url 'cancel_order' order.id %}"
+                            method="POST"
+                        >
+
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="cancel-btn"
+                            >
+                                ✕ Cancel Order
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                {% endif %}
+
+
+
+                <!-- TRACKING -->
+
+                {% if order.status != 'Cancelled' %}
+
+                    <div class="tracking">
+
+                        <div class="tracking-heading">
+                            📍 Order Tracking
+                        </div>
+
+                        <div class="timeline">
+
+                            <!-- PLACED -->
+
+                            <div class="step active">
+
+                                <div class="step-icon">
+                                    📦
+                                </div>
+
+                                <div class="step-label">
+                                    Placed
+                                </div>
+
+                            </div>
+
+
+                            <!-- LINE -->
+
+                            <div class="timeline-line
+                                {% if order.status == 'Confirmed' or order.status == 'Shipped' or order.status == 'Out for Delivery' or order.status == 'Delivered' %}
+                                    active
+                                {% endif %}
+                            "></div>
+
+
+                            <!-- CONFIRMED -->
+
+                            <div class="step
+                                {% if order.status == 'Confirmed' or order.status == 'Shipped' or order.status == 'Out for Delivery' or order.status == 'Delivered' %}
+                                    active
+                                {% endif %}
+                            ">
+
+                                <div class="step-icon">
+                                    ✅
+                                </div>
+
+                                <div class="step-label">
+                                    Confirmed
+                                </div>
+
+                            </div>
+
+
+                            <!-- LINE -->
+
+                            <div class="timeline-line
+                                {% if order.status == 'Shipped' or order.status == 'Out for Delivery' or order.status == 'Delivered' %}
+                                    active
+                                {% endif %}
+                            "></div>
+
+
+                            <!-- SHIPPED -->
+
+                            <div class="step
+                                {% if order.status == 'Shipped' or order.status == 'Out for Delivery' or order.status == 'Delivered' %}
+                                    active
+                                {% endif %}
+                            ">
+
+                                <div class="step-icon">
+                                    🚚
+                                </div>
+
+                                <div class="step-label">
+                                    Shipped
+                                </div>
+
+                            </div>
+
+
+                            <!-- LINE -->
+
+                            <div class="timeline-line
+                                {% if order.status == 'Out for Delivery' or order.status == 'Delivered' %}
+                                    active
+                                {% endif %}
+                            "></div>
+
+
+                            <!-- OUT FOR DELIVERY -->
+
+                            <div class="step
+                                {% if order.status == 'Out for Delivery' or order.status == 'Delivered' %}
+                                    active
+                                {% endif %}
+                            ">
+
+                                <div class="step-icon">
+                                    🛵
+                                </div>
+
+                                <div class="step-label">
+                                    Out for Delivery
+                                </div>
+
+                            </div>
+
+
+                            <!-- LINE -->
+
+                            <div class="timeline-line
+                                {% if order.status == 'Delivered' %}
+                                    active
+                                {% endif %}
+                            "></div>
+
+
+                            <!-- DELIVERED -->
+
+                            <div class="step
+                                {% if order.status == 'Delivered' %}
+                                    active
+                                {% endif %}
+                            ">
+
+                                <div class="step-icon">
+                                    🏠
+                                </div>
+
+                                <div class="step-label">
+                                    Delivered
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% else %}
+
+                    <!-- CANCELLED -->
+
+                    <div class="cancelled-box">
+
+                        <div class="cancelled-icon">
+                            ❌
+                        </div>
+
+                        <div class="cancelled-title">
+                            Order Cancelled
+                        </div>
+
+                        <div class="cancelled-text">
+                            This order is no longer active.
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <!-- EMPTY -->
+
+        <div class="empty-orders">
+
+            <div class="empty-icon">
+                🛒
+            </div>
+
+            <h3 class="fw-bold">
+                No Orders Yet
+            </h3>
+
+            <p class="text-muted">
+                Your shopping journey starts here.
+            </p>
+
+            <a
+                href="{% url 'home' %}"
+                class="btn btn-primary rounded-pill px-4"
+            >
+                🛍️ Start Shopping
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,291 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Checkout | GoVia Store</title>
+
+    <link rel="stylesheet"
+          href="{% static 'style.css' %}">
+
+    <style>
+
+        body {
+            background: #f5f7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .checkout-container {
+            width: 85%;
+            max-width: 1000px;
+            margin: 40px auto;
+        }
+
+        .checkout-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #123;
+        }
+
+        .product {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .product img {
+            width: 130px;
+            height: 130px;
+            object-fit: contain;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .product-details {
+            flex: 1;
+        }
+
+        .product-details h3 {
+            margin-bottom: 10px;
+            color: #222;
+        }
+
+        .price {
+            font-size: 19px;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+
+        .quantity {
+            margin-top: 8px;
+        }
+
+        .size {
+            margin-top: 6px;
+        }
+
+        .item-total {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .total-box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .total {
+            font-size: 26px;
+            font-weight: bold;
+            color: #111;
+        }
+
+        .pay-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 13px 28px;
+            background-color: #198754;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+            border: none;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .pay-btn:hover {
+            background-color: #146c43;
+        }
+
+        .continue {
+            display: inline-block;
+            margin-top: 20px;
+            margin-left: 10px;
+            padding: 13px 20px;
+            text-decoration: none;
+            border: 1px solid #0d6efd;
+            border-radius: 7px;
+            color: #0d6efd;
+        }
+
+        .continue:hover {
+            background: #0d6efd;
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+
+            .checkout-container {
+                width: 92%;
+            }
+
+            .product {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .product img {
+                width: 160px;
+                height: 160px;
+            }
+
+            .continue {
+                margin-left: 0;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="checkout-container">
+
+    <h1 class="checkout-title">
+        🛒 GoVia Store Checkout
+    </h1>
+
+
+    <hr>
+
+
+    {% for item in products %}
+
+    <div class="product">
+
+        <img
+            src="{% static 'images/' %}{{ item.product.image }}"
+            alt="{{ item.product.name }}"
+        >
+
+
+        <div class="product-details">
+
+            <h3>
+                {{ item.product.name }}
+            </h3>
+
+
+            <p class="price">
+                ₹{{ item.product.price }}
+            </p>
+
+
+            <p class="quantity">
+
+                <strong>
+                    Quantity:
+                </strong>
+
+                {{ item.quantity }}
+
+            </p>
+
+
+            {% if item.size %}
+
+            <p class="size">
+
+                <strong>
+                    Size:
+                </strong>
+
+                {{ item.size }}
+
+            </p>
+
+            {% endif %}
+
+
+            <p class="item-total">
+
+                Item Total:
+                ₹{{ item.item_total }}
+
+            </p>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+
+    <div class="total-box">
+
+
+        <div class="total">
+
+            Total Amount:
+            ₹{{ total }}
+
+        </div>
+
+
+        <form
+            action="/payment"
+            method="POST"
+        >
+
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="buy_now"
+                value="0"
+            >
+
+
+            <button
+                type="submit"
+                class="pay-btn"
+            >
+
+                💳 Proceed to Payment
+
+            </button>
+
+        </form>
+
+
+        <a
+            href="{% url 'home' %}"
+            class="continue"
+        >
+
+            ← Continue Shopping
+
+        </a>
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

@@ -111,9 +111,8 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
 
         'DIRS': [
-            BASE_DIR.parent / 'templates',
-        ],
-
+    BASE_DIR / 'templates',
+],
         'APP_DIRS': True,
 
         'OPTIONS': {
@@ -199,29 +198,23 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR.parent / 'static',
+    BASE_DIR / 'static',
 ]
 
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # ============================================================
 # EMAIL
 # ============================================================
 
-if DEBUG:
-    MAILERS = {
-        "default": {
-            "BACKEND": "django.core.mail.backends.console.EmailBackend",
-        },
-    }
-else:
-    MAILERS = {
-        "default": {
-            "BACKEND": os.getenv(
-                "EMAIL_BACKEND",
-                "django.core.mail.backends.smtp.EmailBackend"
-            ),
-        },
-    }
+MAILERS = {
+    "default": {
+        "BACKEND": os.getenv(
+            "EMAIL_BACKEND",
+            "django.core.mail.backends.smtp.EmailBackend"
+        ),
+    },
+}
 
 
 # ============================================================

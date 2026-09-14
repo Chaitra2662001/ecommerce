@@ -1,0 +1,523 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>My Profile</title>
+
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <style>
+        body {
+            background: #f4f6f9;
+        }
+
+        .profile-container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .profile-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .order-card {
+            border: 1px solid #e1e5ea;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+
+        .order-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .timeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .timeline-step {
+            text-align: center;
+            min-width: 70px;
+        }
+
+        .timeline-icon {
+            font-size: 20px;
+        }
+
+        .timeline-line {
+            width: 45px;
+            height: 3px;
+            background: #ddd;
+        }
+
+        .timeline-line.active {
+            background: #28a745;
+        }
+
+        .profile-title {
+            font-weight: 700;
+        }
+
+        .section-title {
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .review-card {
+            border: 1px solid #e1e5ea;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 576px) {
+
+            .timeline {
+                gap: 5px;
+            }
+
+            .timeline-line {
+                width: 25px;
+            }
+
+            .timeline-step {
+                min-width: 55px;
+            }
+
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="container py-5 profile-container">
+
+    <!-- PAGE TITLE -->
+
+    <div class="text-center mb-4">
+
+        <h1 class="profile-title">
+            👤 My Profile
+        </h1>
+
+        <p class="text-muted">
+            Manage your account, orders and reviews
+        </p>
+
+    </div>
+
+
+    <!-- PERSONAL INFORMATION -->
+
+    <div class="card profile-card p-4 mb-4">
+
+        <h4 class="section-title">
+            👤 Personal Information
+        </h4>
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+
+                <small class="text-muted">
+                    Name
+                </small>
+
+                <p class="fw-semibold mb-0">
+                    {{ user.name }}
+                </p>
+
+            </div>
+
+
+            <div class="col-md-6 mb-3">
+
+                <small class="text-muted">
+                    Email
+                </small>
+
+                <p class="fw-semibold mb-0">
+                    {{ user.email }}
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="mt-3">
+
+            <!-- EDIT PROFILE -->
+
+            <a
+                href="{% url 'edit_profile' %}"
+                class="btn btn-primary me-2"
+            >
+                ✏️ Edit Profile
+            </a>
+
+
+            <!-- CHANGE PASSWORD -->
+
+            <a
+                href="{% url 'change_password' %}"
+                class="btn btn-warning"
+            >
+                🔐 Change Password
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ORDERS -->
+
+    <div class="card profile-card p-4 mb-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <h4 class="section-title mb-0">
+                📦 My Orders
+            </h4>
+
+            {% if orders %}
+
+            <a
+                href="#"
+                class="btn btn-outline-primary btn-sm"
+            >
+                View All Orders →
+            </a>
+
+            {% endif %}
+
+        </div>
+
+
+        {% if orders %}
+
+            {% for order in orders %}
+
+                {% if forloop.counter <= 5 %}
+
+                <div class="order-card p-3 mb-3">
+
+                    <!-- ORDER HEADER -->
+
+                    <div class="d-flex justify-content-between align-items-start flex-wrap">
+
+                        <div>
+
+                            <h6 class="fw-bold mb-1">
+                                🧾 Order #{{ order.id }}
+                            </h6>
+
+                            <p class="text-muted small mb-2">
+                                {{ order.items }}
+                            </p>
+
+                        </div>
+
+
+                        <div class="text-end">
+
+                            <h6 class="fw-bold mb-2">
+                                ₹{{ order.total }}
+                            </h6>
+
+
+                            {% if order.status == "Pending" %}
+
+                                <span class="badge bg-warning text-dark rounded-pill">
+                                    🟡 Pending
+                                </span>
+
+                            {% elif order.status == "Shipped" %}
+
+                                <span class="badge bg-primary rounded-pill">
+                                    🔵 Shipped
+                                </span>
+
+                            {% elif order.status == "Delivered" %}
+
+                                <span class="badge bg-success rounded-pill">
+                                    🟢 Delivered
+                                </span>
+
+                            {% elif order.status == "Cancelled" %}
+
+                                <span class="badge bg-danger rounded-pill">
+                                    🔴 Cancelled
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary rounded-pill">
+                                    {{ order.status }}
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- TIMELINE -->
+
+                    {% if order.status != "Cancelled" %}
+
+                    <div class="timeline">
+
+                        <!-- PLACED -->
+
+                        <div class="timeline-step">
+
+                            <div class="timeline-icon
+                                {% if order.status == 'Pending' or order.status == 'Shipped' or order.status == 'Delivered' %}
+                                    text-success
+                                {% else %}
+                                    text-secondary
+                                {% endif %}
+                            ">
+
+                                📦
+
+                            </div>
+
+                            <small>
+                                Placed
+                            </small>
+
+                        </div>
+
+
+                        <!-- LINE -->
+
+                        <div class="timeline-line
+                            {% if order.status == 'Shipped' or order.status == 'Delivered' %}
+                                active
+                            {% endif %}
+                        ">
+                        </div>
+
+
+                        <!-- SHIPPED -->
+
+                        <div class="timeline-step">
+
+                            <div class="timeline-icon
+                                {% if order.status == 'Shipped' or order.status == 'Delivered' %}
+                                    text-success
+                                {% else %}
+                                    text-secondary
+                                {% endif %}
+                            ">
+
+                                🚚
+
+                            </div>
+
+                            <small>
+                                Shipped
+                            </small>
+
+                        </div>
+
+
+                        <!-- LINE -->
+
+                        <div class="timeline-line
+                            {% if order.status == 'Delivered' %}
+                                active
+                            {% endif %}
+                        ">
+                        </div>
+
+
+                        <!-- DELIVERED -->
+
+                        <div class="timeline-step">
+
+                            <div class="timeline-icon
+                                {% if order.status == 'Delivered' %}
+                                    text-success
+                                {% else %}
+                                    text-secondary
+                                {% endif %}
+                            ">
+
+                                🏠
+
+                            </div>
+
+                            <small>
+                                Delivered
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    {% else %}
+
+                    <!-- CANCELLED -->
+
+                    <div class="alert alert-danger text-center mt-3 mb-0 py-2">
+
+                        ❌ This order has been cancelled.
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+                {% endif %}
+
+            {% endfor %}
+
+
+        {% else %}
+
+            <!-- NO ORDERS -->
+
+            <div class="text-center py-4">
+
+                <div class="fs-1">
+                    📦
+                </div>
+
+                <h6 class="fw-bold">
+                    No Orders Yet
+                </h6>
+
+                <p class="text-muted mb-3">
+                    You haven't placed any orders yet.
+                </p>
+
+                <a
+                    href="#"
+                    class="btn btn-primary"
+                >
+                    🛍️ Start Shopping
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+
+    <!-- REVIEWS -->
+
+    <div class="card profile-card p-4 mb-4">
+
+        <h4 class="section-title">
+            ⭐ My Reviews
+        </h4>
+
+
+        {% if reviews %}
+
+            {% for review in reviews %}
+
+            <div class="review-card p-3 mb-2">
+
+                <div class="mb-2">
+
+                    {% if review.rating >= 1 %}
+                        ⭐
+                    {% endif %}
+
+                    {% if review.rating >= 2 %}
+                        ⭐
+                    {% endif %}
+
+                    {% if review.rating >= 3 %}
+                        ⭐
+                    {% endif %}
+
+                    {% if review.rating >= 4 %}
+                        ⭐
+                    {% endif %}
+
+                    {% if review.rating >= 5 %}
+                        ⭐
+                    {% endif %}
+
+                </div>
+
+
+                <p class="mb-0">
+                    {{ review.comment }}
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+
+        {% else %}
+
+            <div class="text-center py-3">
+
+                <p class="text-muted mb-0">
+                    No Reviews Yet.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+
+    <!-- BACK TO HOME -->
+
+    <div class="text-center">
+
+        <a
+            href="#"
+            class="btn btn-dark rounded-pill px-4"
+        >
+            🏠 Back to Home
+        </a>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+    window.history.scrollRestoration = "manual";
+
+    window.onload = function () {
+        window.scrollTo(0, 0);
+    };
+
+</script>
+
+
+</body>
+</html>

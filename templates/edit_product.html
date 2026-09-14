@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Edit Product</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<center>
+
+<h1>Edit Product</h1>
+
+<form method="POST" enctype="multipart/form-data">
+
+    <input type="text"
+           name="name"
+           value="{{ product.name }}"
+           required>
+
+    <br><br>
+
+    <input type="number"
+           name="price"
+           value="{{ product.price }}"
+           required>
+
+    <br><br>
+
+    <select name="category" required>
+
+        <option value="Electronics"
+            {% if product.category == "Electronics" %}selected{% endif %}>
+            Electronics
+        </option>
+
+        <option value="Bags"
+            {% if product.category == "Bags" %}selected{% endif %}>
+            Bags
+        </option>
+
+        <option value="Fashion"
+            {% if product.category == "Fashion" %}selected{% endif %}>
+            Fashion
+        </option>
+
+    </select>
+
+    <br><br>
+
+    <input type="number"
+           name="stock"
+           value="{{ product.stock }}"
+           min="0"
+           required>
+
+    <br><br>
+
+    <input type="file"
+           name="image"
+           accept="image/*">
+
+    <br><br>
+
+    <button class="btn">
+        Update Product
+    </button>
+
+</form>
+</center>
+
+</body>
+
+</html>

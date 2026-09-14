@@ -1,0 +1,753 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>{{ product.name }} - GoVia Store</title>
+
+    <link rel="stylesheet"
+          href="{% static 'style.css' %}">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="main-navbar">
+
+    <div class="store-brand">
+
+        <span class="logo">
+            GoVia Store
+        </span>
+
+        <span class="store-tagline">
+            Everything You Love, All in One Place.
+        </span>
+
+    </div>
+
+    <div class="nav-links">
+
+        <a href="{% url 'home' %}">
+            🏠 Home
+        </a>
+
+        <a href="{% url 'profile' %}">
+            👤 My Profile
+        </a>
+
+        <a href="{% url 'cart' %}"></a>
+            🛒 Cart
+        </a>
+
+        <a href="{% url 'wishlist' %}">
+            ❤️ Wishlist
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- PRODUCT DETAILS -->
+
+<section class="product-detail-section">
+
+    <div class="product-detail-card">
+
+        <!-- IMAGE -->
+
+        <div class="product-detail-image">
+
+            <img
+                src="{% static 'images/' %}{{ product.image }}"
+                alt="{{ product.name }}"
+            >
+
+        </div>
+
+
+        <!-- DETAILS -->
+
+        <div class="product-detail-info">
+
+            <span class="product-category">
+                {{ product.category }}
+            </span>
+
+            <h1>
+                {{ product.name }}
+            </h1>
+
+            <p class="detail-price">
+                ₹{{ product.price }}
+            </p>
+
+            <p class="detail-description">
+                Premium quality product with modern design.
+            </p>
+
+
+            {% if product.stock > 0 %}
+
+            <p class="detail-stock available">
+                ✓ {{ product.stock }} available
+            </p>
+
+
+            <!-- SIZE - ONLY FOR FASHION -->
+
+            {% if product.category|lower == 'fashion' %}
+
+            <div class="size-selection">
+
+                <label>
+                    <strong>Select Size:</strong>
+                </label>
+
+                <div class="size-options">
+
+                    <label class="size-option">
+
+                        <input
+                            type="radio"
+                            name="size"
+                            value="XS"
+                        >
+
+                        <span>XS</span>
+
+                    </label>
+
+
+                    <label class="size-option">
+
+                        <input
+                            type="radio"
+                            name="size"
+                            value="S"
+                        >
+
+                        <span>S</span>
+
+                    </label>
+
+
+                    <label class="size-option">
+
+                        <input
+                            type="radio"
+                            name="size"
+                            value="M"
+                        >
+
+                        <span>M</span>
+
+                    </label>
+
+
+                    <label class="size-option">
+
+                        <input
+                            type="radio"
+                            name="size"
+                            value="L"
+                        >
+
+                        <span>L</span>
+
+                    </label>
+
+
+                    <label class="size-option">
+
+                        <input
+                            type="radio"
+                            name="size"
+                            value="XL"
+                        >
+
+                        <span>XL</span>
+
+                    </label>
+
+
+                    <label class="size-option">
+
+                        <input
+                            type="radio"
+                            name="size"
+                            value="2XL"
+                        >
+
+                        <span>2XL</span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- QUANTITY -->
+
+            <div class="quantity-box">
+
+                <label>
+                    <strong>Quantity:</strong>
+                </label>
+
+                <div class="quantity-control">
+
+                    <button
+                        type="button"
+                        onclick="decreaseQuantity()">
+                        −
+                    </button>
+
+                    <input
+                        type="number"
+                        id="quantity"
+                        value="1"
+                        min="1"
+                        max="{{ product.stock }}"
+                    >
+
+                    <button
+                        type="button"
+                        onclick="increaseQuantity()">
+                        +
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- ADD TO CART -->
+
+            <form
+                action="/add_to_cart/{{ product.id }}"
+                method="POST"
+                id="cartForm">
+
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="quantity"
+                    id="cartQuantity"
+                    value="1"
+                >
+
+                {% if product.category|lower == 'fashion' %}
+
+                <input
+                    type="hidden"
+                    name="size"
+                    id="cartSize"
+                >
+
+                {% endif %}
+
+                <button
+                    type="submit"
+                    class="btn detail-cart-btn">
+                    🛒 Add To Cart
+                </button>
+
+            </form>
+
+
+            <!-- BUY NOW -->
+
+            <form
+                action="/buy_now/{{ product.id }}"
+                method="POST"
+                id="buyNowForm">
+
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="quantity"
+                    id="buyNowQuantity"
+                    value="1"
+                >
+
+                {% if product.category|lower == 'fashion' %}
+
+                <input
+                    type="hidden"
+                    name="size"
+                    id="buyNowSize"
+                >
+
+                {% endif %}
+
+                <button
+                    type="submit"
+                    class="btn buy-now-btn">
+                    ⚡ Buy Now
+                </button>
+
+            </form>
+
+
+            <!-- WISHLIST -->
+
+            <a
+                href="{% url 'add_to_wishlist' product.id %}"
+                class="btn wishlist-product-btn">
+                ❤️ Add To Wishlist
+            </a>
+
+
+            {% else %}
+
+            <p class="detail-stock unavailable">
+                ✕ Out of Stock
+            </p>
+
+            <button
+                class="btn detail-cart-btn"
+                disabled>
+                Out of Stock
+            </button>
+
+            {% endif %}
+
+
+            <a
+                href="{% url 'home' %}"
+                class="back-home-btn">
+                ← Back To Home
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- REVIEWS -->
+
+<section class="reviews-section">
+
+
+    <!-- DJANGO MESSAGES -->
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="review-message">
+
+                <p>
+                    <b>{{ message }}</b>
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+    <!-- WRITE REVIEW -->
+
+    <div class="review-form-card">
+
+        <h2>
+            ✍️ Write a Review
+        </h2>
+
+        <form
+            action="{% url 'add_review' product.id %}"
+            method="POST">
+
+            {% csrf_token %}
+
+            <label>
+                Rating
+            </label>
+
+            <select
+                name="rating"
+                required>
+
+                <option value="5">
+                    ⭐⭐⭐⭐⭐ (5)
+                </option>
+
+                <option value="4">
+                    ⭐⭐⭐⭐ (4)
+                </option>
+
+                <option value="3">
+                    ⭐⭐⭐ (3)
+                </option>
+
+                <option value="2">
+                    ⭐⭐ (2)
+                </option>
+
+                <option value="1">
+                    ⭐ (1)
+                </option>
+
+            </select>
+
+
+            <label>
+                Comment
+            </label>
+
+            <textarea
+                name="comment"
+                rows="5"
+                placeholder="Share your experience with this product..."
+                required></textarea>
+
+
+            <button
+                type="submit"
+                class="btn submit-review-btn">
+                Submit Review
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- CUSTOMER REVIEWS -->
+
+    <div class="customer-reviews-card">
+
+        <h2>
+            ⭐ Customer Reviews
+        </h2>
+
+
+        <div class="average-rating">
+
+            <strong>
+                Average Rating:
+            </strong>
+
+            {% if average_rating %}
+
+                {% if average_rating >= 1 %}⭐{% endif %}
+                {% if average_rating >= 2 %}⭐{% endif %}
+                {% if average_rating >= 3 %}⭐{% endif %}
+                {% if average_rating >= 4 %}⭐{% endif %}
+                {% if average_rating >= 5 %}⭐{% endif %}
+
+            {% endif %}
+
+            <span>
+                ({{ average_rating|default:0 }}/5)
+            </span>
+
+        </div>
+
+
+        {% if reviews %}
+
+            {% for review in reviews %}
+
+                <div class="review-card">
+
+
+                    <div class="review-header">
+
+                        <strong>
+                            👤 {{ review.user.profile.name }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="review-rating">
+
+                        Rating:
+
+                        {% if review.rating >= 1 %}⭐{% endif %}
+                        {% if review.rating >= 2 %}⭐{% endif %}
+                        {% if review.rating >= 3 %}⭐{% endif %}
+                        {% if review.rating >= 4 %}⭐{% endif %}
+                        {% if review.rating >= 5 %}⭐{% endif %}
+
+                    </div>
+
+
+                    <p class="review-comment">
+                        {{ review.comment }}
+                    </p>
+
+
+                    <small class="review-date">
+                        {{ review.created_at|date:"d-m-Y H:i" }}
+                    </small>
+
+
+                    <div class="review-actions">
+
+                        <a
+                            href="{% url 'edit_review' review.id %}">
+                            ✏️ Edit Review
+                        </a>
+
+                        <a
+                            href="{% url 'delete_review' review.id %}"
+                            onclick="return confirm('Are you sure you want to delete this review?')">
+                            🗑️ Delete Review
+                        </a>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+
+        {% else %}
+
+            <div class="no-reviews">
+
+                <p>
+                    ⭐ No reviews yet.
+                </p>
+
+                <p>
+                    Be the first to review this product!
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer class="store-footer">
+
+    <h3>
+        GoVia Store
+    </h3>
+
+    <p>
+        Everything You Love, All in One Place.
+    </p>
+
+    <p class="copyright">
+        © 2026 GoVia Store. All Rights Reserved.
+    </p>
+
+</footer>
+
+
+<script>
+
+function decreaseQuantity() {
+
+    const quantityInput =
+        document.getElementById("quantity");
+
+    let quantity =
+        parseInt(quantityInput.value);
+
+    if (quantity > 1) {
+
+        quantity--;
+
+        quantityInput.value = quantity;
+
+        updateQuantityValues();
+
+    }
+
+}
+
+
+function increaseQuantity() {
+
+    const quantityInput =
+        document.getElementById("quantity");
+
+    const maxQuantity =
+        parseInt(quantityInput.max);
+
+    let quantity =
+        parseInt(quantityInput.value);
+
+    if (quantity < maxQuantity) {
+
+        quantity++;
+
+        quantityInput.value = quantity;
+
+        updateQuantityValues();
+
+    }
+
+}
+
+
+function updateQuantityValues() {
+
+    const quantity =
+        document.getElementById("quantity").value;
+
+
+    document.getElementById("cartQuantity").value =
+        quantity;
+
+
+    document.getElementById("buyNowQuantity").value =
+        quantity;
+
+}
+
+
+/* SIZE SELECTION */
+
+document
+    .querySelectorAll('input[name="size"]')
+    .forEach(function (radio) {
+
+        radio.addEventListener(
+            "change",
+            function () {
+
+                const selectedSize =
+                    this.value;
+
+
+                const cartSize =
+                    document.getElementById("cartSize");
+
+
+                const buyNowSize =
+                    document.getElementById("buyNowSize");
+
+
+                if (cartSize) {
+
+                    cartSize.value =
+                        selectedSize;
+
+                }
+
+
+                if (buyNowSize) {
+
+                    buyNowSize.value =
+                        selectedSize;
+
+                }
+
+            }
+        );
+
+    });
+
+
+/* VALIDATE SIZE BEFORE SUBMIT */
+
+const cartForm =
+    document.getElementById("cartForm");
+
+
+if (cartForm) {
+
+    cartForm.addEventListener(
+        "submit",
+        function(event) {
+
+            const sizeInput =
+                document.querySelector(
+                    'input[name="size"]:checked'
+                );
+
+
+            if (
+                document.querySelector(
+                    'input[name="size"]'
+                )
+                &&
+                !sizeInput
+            ) {
+
+                event.preventDefault();
+
+                alert("Please select a size.");
+
+                return;
+
+            }
+
+        }
+    );
+
+}
+
+
+const buyNowForm =
+    document.getElementById("buyNowForm");
+
+
+if (buyNowForm) {
+
+    buyNowForm.addEventListener(
+        "submit",
+        function(event) {
+
+            const sizeInput =
+                document.querySelector(
+                    'input[name="size"]:checked'
+                );
+
+
+            if (
+                document.querySelector(
+                    'input[name="size"]'
+                )
+                &&
+                !sizeInput
+            ) {
+
+                event.preventDefault();
+
+                alert("Please select a size.");
+
+                return;
+
+            }
+
+        }
+    );
+
+}
+
+</script>
+
+
+</body>
+
+</html>

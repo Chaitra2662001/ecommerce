@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h1>🛠️ Admin Panel</h1>
+
+<a href="/add_product" class="btn">
+    ➕ Add Product
+</a>
+
+<hr>
+
+<h2>🛍️ Products</h2>
+
+{% for product in products %}
+
+<div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+
+    <img src="{{ url_for('static', filename='images/' + product.image) }}" width="150">
+
+    <p><b>{{ product.name }}</b></p>
+
+    <p>₹{{ product.price }}</p>
+
+    {% if product.stock > 0 %}
+        <p>In Stock</p>
+    {% else %}
+        <p>Out of Stock</p>
+    {% endif %}
+
+</div>
+
+{% endfor %}
+
+<hr>
+
+<h2>📦 All Orders</h2>
+
+{% for order in orders %}
+
+<div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+
+    <b>{{ order.user_name }}</b><br>
+
+    {{ order.items }}<br>
+
+    ₹{{ order.total }}<br>
+
+    <b>Status:</b> {{ order.status }}
+
+    <br><br>
+
+{% if order.status == "Pending" %}
+
+    <a href="{{ url_for('update_status', id=order.id) }}">
+        ✅ Confirm Order
+    </a>
+
+{% elif order.status == "Confirmed" %}
+
+    <a href="{{ url_for('update_status', id=order.id) }}">
+        🚚 Mark as Shipped
+    </a>
+
+{% elif order.status == "Shipped" %}
+
+    <a href="{{ url_for('update_status', id=order.id) }}">
+        🛵 Out for Delivery
+    </a>
+
+{% elif order.status == "Out for Delivery" %}
+
+    <a href="{{ url_for('update_status', id=order.id) }}">
+        🏠 Mark as Delivered
+    </a>
+
+{% elif order.status == "Delivered" %}
+
+    <p style="color:green;">
+        ✔ Order Delivered
+    </p>
+
+{% elif order.status == "Cancelled" %}
+
+    <p style="color:red;">
+        ❌ Order Cancelled
+    </p>
+
+{% endif %} 
+
+</div>
+
+{% endfor %}
+
+</body>
+</html>

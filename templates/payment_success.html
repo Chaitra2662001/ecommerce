@@ -1,0 +1,147 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Payment Successful</title>
+
+    <link rel="stylesheet"
+          href="{% static 'style.css' %}">
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .success-container {
+            width: 450px;
+            margin: 80px auto;
+            background: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .success-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            color: #198754;
+            margin-bottom: 10px;
+        }
+
+        .message {
+            font-size: 18px;
+            margin-bottom: 25px;
+        }
+
+        .order-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .order-details p {
+            margin: 10px 0;
+        }
+
+        .paid {
+            color: #198754;
+            font-weight: bold;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            margin: 5px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .orders-btn {
+            background: #0d6efd;
+        }
+
+        .home-btn {
+            background: #6c757d;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="success-container">
+
+    <div class="success-icon">
+        ✅
+    </div>
+
+    <h1>
+        Payment Successful!
+    </h1>
+
+    <p class="message">
+        Your payment has been completed successfully.
+    </p>
+
+    <div class="order-details">
+
+        <p>
+            <b>Order ID:</b>
+            #{{ order.id }}
+        </p>
+
+        <p>
+            <b>Items:</b>
+            {{ order.items }}
+        </p>
+
+        <p>
+            <b>Total Amount:</b>
+            ₹{{ order.total }}
+        </p>
+
+        <p>
+            <b>Payment Status:</b>
+
+            <span class="paid">
+                {{ order.payment_status }}
+            </span>
+        </p>
+
+        <p>
+            <b>Order Status:</b>
+            {{ order.status }}
+        </p>
+
+    </div>
+
+    <a href="{% url 'home' %}"
+       class="btn home-btn">
+
+        🏠 Continue Shopping
+
+    </a>
+
+</div>
+
+</body>
+
+</html>

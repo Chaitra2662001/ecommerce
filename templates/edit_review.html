@@ -1,0 +1,39 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Review</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+
+<h2>Edit Your Review</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <label>Rating</label><br>
+
+    <select name="rating">
+
+       <option value="5" {% if review.rating == 5 %}selected{% endif %}>⭐⭐⭐⭐⭐</option>
+       <option value="4" {% if review.rating == 4 %}selected{% endif %}>⭐⭐⭐⭐</option>
+       <option value="3" {% if review.rating == 3 %}selected{% endif %}>⭐⭐⭐</option>
+       <option value="2" {% if review.rating == 2 %}selected{% endif %}>⭐⭐</option>
+<option value="1" {% if review.rating == 1 %}selected{% endif %}>⭐</option>
+
+    </select>
+
+    <br><br>
+
+    <textarea name="comment" rows="5" cols="50">{{ review.comment }}</textarea>
+
+    <br><br>
+
+    <button type="submit">Update Review</button>
+
+</form>
+
+</body>
+</html>

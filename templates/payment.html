@@ -1,0 +1,479 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Payment</title>
+
+    <link rel="stylesheet"
+          href="{% static 'style.css' %}">
+
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .payment-container {
+            width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .amount {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .methods {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .method-button {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .method-button:hover {
+            background: #f0f0f0;
+        }
+
+        .payment-section {
+            display: none;
+        }
+
+        .payment-section.active {
+            display: block;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+        .pay-button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 25px;
+            background: #198754;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        .pay-button:hover {
+            background: #157347;
+        }
+
+        .upi-box {
+            text-align: center;
+            padding: 10px;
+        }
+
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .upi-info {
+            text-align: center;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .upi-status {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 25px;
+        }
+
+        .checking {
+            color: #0d6efd;
+        }
+
+        .success {
+            color: #198754;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .cancel-payment {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #dc3545;
+            text-decoration: underline;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="payment-container">
+
+    <h1>💳 Payment</h1>
+
+    <div class="amount">
+        ₹{{ total }}
+    </div>
+
+
+    <!-- PAYMENT METHODS -->
+
+    <div class="methods">
+
+        <button
+            type="button"
+            class="method-button"
+            onclick="showCard()">
+
+            💳 Card
+
+        </button>
+
+
+        <button
+            type="button"
+            class="method-button"
+            onclick="showUPI()">
+
+            📱 UPI
+
+        </button>
+
+    </div>
+
+
+    <!-- ================= CARD PAYMENT ================= -->
+
+    <div id="card-section"
+         class="payment-section active">
+
+        <form
+            action="{% url 'process_payment' %}"
+            method="POST">
+
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="buy_now"
+                value="{% if buy_now %}1{% else %}0{% endif %}">
+
+
+            <label>
+                Card Number
+            </label>
+
+            <input
+                type="text"
+                name="card_number"
+                placeholder="1234 5678 9012 3456"
+                maxlength="19"
+                required>
+
+
+            <label>
+                Card Holder Name
+            </label>
+
+            <input
+                type="text"
+                name="card_name"
+                placeholder="Enter card holder name"
+                required>
+
+
+            <label>
+                Expiry Date
+            </label>
+
+            <input
+                type="text"
+                name="expiry"
+                placeholder="MM/YY"
+                maxlength="5"
+                required>
+
+
+            <label>
+                CVV
+            </label>
+
+            <input
+                type="password"
+                name="cvv"
+                placeholder="123"
+                maxlength="3"
+                required>
+
+
+            <button
+                type="submit"
+                class="pay-button">
+
+                🔒 Pay ₹{{ total }}
+
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- ================= UPI PAYMENT ================= -->
+
+    <div id="upi-section"
+         class="payment-section">
+
+        <div class="upi-box">
+
+            <h3>📱 Scan & Pay</h3>
+
+            <p class="upi-info">
+                Scan this QR code using your UPI app
+            </p>
+
+
+            <div id="qrcode"></div>
+
+
+            <p class="upi-info">
+                GPay • PhonePe • Paytm • BHIM
+            </p>
+
+
+            <p>
+                <b>
+                    Amount: ₹{{ total }}
+                </b>
+            </p>
+
+
+            <!-- SIMULATED UPI PAYMENT -->
+
+            <form
+                id="upi-payment-form"
+                action="{% url 'process_payment' %}"
+                method="POST">
+
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="buy_now"
+                    value="{% if buy_now %}1{% else %}0{% endif %}">
+
+
+                <button
+                    type="button"
+                    class="pay-button"
+                    id="upi-pay-button"
+                    onclick="verifyUPI()">
+
+                    ✅ I Have Paid ₹{{ total }}
+
+                </button>
+
+            </form>
+
+
+            <div
+                id="upi-status"
+                class="upi-status">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <a
+        href="{% url 'checkout' %}"
+        class="back">
+
+        ← Back to Checkout
+
+    </a>
+
+
+    <a
+        href="{% url 'checkout' %}"
+        class="cancel-payment">
+
+        ❌ Cancel Payment
+
+    </a>
+
+</div>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+    function showCard() {
+
+        document
+            .getElementById("card-section")
+            .classList.add("active");
+
+        document
+            .getElementById("upi-section")
+            .classList.remove("active");
+
+    }
+
+
+    function showUPI() {
+
+        document
+            .getElementById("upi-section")
+            .classList.add("active");
+
+        document
+            .getElementById("card-section")
+            .classList.remove("active");
+
+    }
+
+
+    // ================= QR CODE =================
+
+    var upiData =
+        "upi://pay?pa=mystore@upi"
+        + "&pn=My Store"
+        + "&am={{ total }}"
+        + "&cu=INR";
+
+
+    new QRCode(
+        document.getElementById("qrcode"),
+        {
+            text: upiData,
+            width: 200,
+            height: 200
+        }
+    );
+
+
+    // ================= UPI VERIFICATION =================
+
+    function verifyUPI() {
+
+        const button =
+            document.getElementById("upi-pay-button");
+
+        const status =
+            document.getElementById("upi-status");
+
+
+        button.disabled = true;
+
+
+        button.style.background = "#6c757d";
+
+
+        button.innerHTML =
+            "🔄 Checking Payment...";
+
+
+        status.className =
+            "upi-status checking";
+
+
+        status.innerHTML =
+            "🔄 Checking UPI payment...";
+
+
+        // STEP 2
+
+        setTimeout(function() {
+
+            button.innerHTML =
+                "🔍 Verifying Payment...";
+
+            status.innerHTML =
+                "🔍 Verifying UPI payment...";
+
+        }, 1500);
+
+
+        // STEP 3
+
+        setTimeout(function() {
+
+            button.innerHTML =
+                "✅ Payment Verified";
+
+            button.style.background =
+                "#198754";
+
+            status.className =
+                "upi-status success";
+
+            status.innerHTML =
+                "✅ UPI Payment Verified Successfully!";
+
+        }, 3000);
+
+
+        // STEP 4
+
+        setTimeout(function() {
+
+            document
+                .getElementById("upi-payment-form")
+                .submit();
+
+        }, 4000);
+
+    }
+
+</script>
+
+
+</body>
+
+</html>
