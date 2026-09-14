@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 
 from pathlib import Path
 import os
+from urllib.parse import unquote, urlparse
 
 from dotenv import load_dotenv
 
@@ -32,7 +33,12 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+# A dormhost.app address works without setting anything; ALLOWED_HOSTS still overrides it.
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", ".dormhost.app,localhost,127.0.0.1").split(",")
+
+# HTTPS ends at the proxy. Without trusting its header, every login form fails the CSRF check.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "https://*.dormhost.app").split(",")
 
 
 # ============================================================
@@ -80,6 +86,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+
+    # Serves static files, which gunicorn does not do on its own.
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
 
@@ -150,6 +159,17 @@ DATABASES = {
     }
 }
 
+# A MySQL database added on DormHost arrives as one MYSQL_URL, and it wins over the DB_* values.
+if os.getenv("MYSQL_URL"):
+    _db = urlparse(os.environ["MYSQL_URL"])
+    DATABASES["default"].update({
+        "NAME": _db.path.lstrip("/"),
+        "USER": unquote(_db.username or ""),
+        "PASSWORD": unquote(_db.password or ""),
+        "HOST": _db.hostname,
+        "PORT": str(_db.port or 3306),
+    })
+
 
 # ============================================================
 # PASSWORD VALIDATION
@@ -202,6 +222,11 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
+}
 
 # ============================================================
 # EMAIL
